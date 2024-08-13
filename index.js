@@ -9,6 +9,7 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const dbConnect = require("./config/dbConnect");
@@ -21,6 +22,16 @@ const apiRateLimiter = require("./utils/apiRateLimiter");
 const port = process.env.PORT || 7019;
 
 const app = express();
+
+const corsOptions = {
+  origin: true,
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // Allow credentials
+};
+
+// Set up CORS middleware to allow requests from different domains
+app.use(cors(corsOptions));
 
 // Parse incoming JSON request bodies with a size limit
 app.use(express.json({ limit: "10kb" }));
@@ -38,12 +49,20 @@ if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 dbConnect(process.env.DATABASE_URI);
 
 // Health check endpoint
-app.get("/", (req, res) => {
+app.get("/api/v1/ping", (req, res) => {
   sendResponse(null, 200, res, "Server is up and running...");
 });
 
 // Set up routes for various API endpoints
 app.use("/api/v1/auth", authRoutes);
+
+// Serve static files from the Views directory
+app.use(express.static(path.join(__dirname, "views", "dist")));
+
+// Serve the React app for all other routes (SPA)
+app.get("*", (req, res) =>
+  res.sendFile(path.join(__dirname, "views", "dist", "index.html"))
+);
 
 // Handle 404 errors for all other routes
 app.all("*", (req, res, next) =>

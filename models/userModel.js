@@ -54,8 +54,7 @@ userSchema.pre("save", async function (next) {
   // Hash the password with cost of 11
   this.password = await bcrypt.hash(this.password, 11);
 
-  if (this.isModified("password") && !this.isNew)
-    this.passwordChangeAt = Date.now() - 1000; // Ensure the token is created after this time
+  if (!this.isNew) this.passwordChangeAt = Date.now() - 1000; // Set change time after saving
 
   next();
 });
@@ -80,28 +79,22 @@ userSchema.methods.changePasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
-userSchema.methods.createToken = function (type, next) {
+userSchema.methods.createToken = function (type) {
   let token;
   let hashedToken;
 
-  if (type === "passwordReset") {
-    // Generate a random token for password reset
+  if (type === "resetPassword") {
     token = crypto.randomBytes(32).toString("hex");
     hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    // Set token and expiry for password reset
-    this.passwordResetToken = hashedToken;
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // Token expires in 10
+    this.resetPasswordToken = hashedToken;
+    this.resetPasswordExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
   } else if (type === "otpVerification") {
-    // Generate a 6-digit code for email verification
     token = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Hash the 6-digit code
     hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    // Set token and expiry for email verification
     this.otp = hashedToken;
-    this.otpExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // Token expires in 24 hours
+    this.otpExpiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
   }
 
   return token;

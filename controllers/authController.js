@@ -10,7 +10,7 @@ const sendResponse = require("../utils/sendResponse");
 exports.signup = catchAsync(async (req, res, next) => {
   const { email, name, password } = req.body;
   if (!email || !name || !password)
-    return next(new AppError("All fields are required!"));
+    return next(new AppError("All fields are required!", 400));
 
   const exUser = await User.findOne({ email });
   if (exUser) return next(new AppError("User already exists", 400));
@@ -48,10 +48,11 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
 
   const hashedCode = crypto.createHash("sha256").update(otpCode).digest("hex");
 
-  // Find user by the provided verification code and check if it has not expired
+  // Find the user by ID and OTP, and ensure the OTP has not expired
   const user = await User.findOne({
+    _id: req.user._id, // Ensure the OTP is tied to the authenticated user
     otp: hashedCode,
-    otpExpires: { $gt: Date.now() },
+    otpExpiresAt: { $gt: Date.now() },
   });
   if (!user) return next(new AppError("OTP code is invalid or expired", 400));
 
@@ -65,6 +66,10 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
   sendResponse(null, 200, res, "Email verification successful");
 });
 
+exports.currentUser = catchAsync(async (req, res, next) => {
+  sendResponse(req.user, 200, res, "Current user fetched successfully");
+});
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const email = req.body.email;
   if (!email) return next(new AppError("Email is required", 400));
@@ -74,7 +79,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // Generate a reset token and expiration date
   const resetToken = user.createToken("resetPassword");
-  await user.save();
+
+  await user.save({ validateBeforeSave: false }); // Skip validation to avoid issues during save
 
   // Send email with reset link
   sendResponse(null, 200, res, "Password reset link sent successfully");
@@ -93,7 +99,8 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     resetPasswordToken: hashedToken,
     resetPasswordExpiresAt: { $gt: Date.now() },
   });
-  if (!user) return next(new AppError("Invalid token or expired", 400));
+  if (!user)
+    return next(new AppError("Invalid reset link or has expired", 400));
 
   // Set new password and clear reset token
   user.password = password;

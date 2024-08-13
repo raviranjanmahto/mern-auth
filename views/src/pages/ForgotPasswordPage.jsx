@@ -8,7 +8,7 @@ import Input from "../components/Input";
 import { useForgotPasswordMutation } from "../redux/userApi";
 
 const ForgotPasswordPage = () => {
-  const [email, setEmail] = useState("exter@exter.com");
+  const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();

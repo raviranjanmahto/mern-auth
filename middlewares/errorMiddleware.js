@@ -8,7 +8,7 @@ const handleCastErrorDb = err => {
 // Handles validation errors for invalid input data
 const handleValidationErrorDb = err => {
   const errors = Object.values(err.errors).map(el => el.message);
-  const message = `Invalid input data. ${errors.join(". ")}`;
+  const message = `${errors.join(". ")}`;
   return new AppError(message, 400);
 };
 
