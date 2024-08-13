@@ -10,8 +10,8 @@ import { useLoginMutation } from "../redux/userApi";
 import { setCredentials } from "../redux/userSlice";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("exter@exter.com");
-  const [password, setPassword] = useState("111111111");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   // Using the login mutation from RTK Query
   const [login, { isLoading }] = useLoginMutation();
@@ -19,7 +19,7 @@ const LoginPage = () => {
 
   const handleLogin = async e => {
     e.preventDefault();
-    if (!email || !password) return toast.error("Fill in all fields");
+    if (!email || !password) return;
 
     try {
       const { data } = await login({ email, password }).unwrap();

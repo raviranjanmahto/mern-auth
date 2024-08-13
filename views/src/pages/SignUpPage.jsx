@@ -21,6 +21,8 @@ const SignUpPage = () => {
 
   const handleSignUp = async e => {
     e.preventDefault();
+    if (!email || !password || !name) return;
+
     try {
       const { data } = await signup({ email, password, name }).unwrap();
       dispatch(setCredentials(data));
@@ -49,6 +51,7 @@ const SignUpPage = () => {
             type="text"
             placeholder="Full Name"
             value={name}
+            required
             onChange={e => setName(e.target.value)}
           />
           <Input
@@ -56,6 +59,7 @@ const SignUpPage = () => {
             type="email"
             placeholder="Email Address"
             value={email}
+            required
             onChange={e => setEmail(e.target.value)}
           />
           <Input
@@ -63,6 +67,7 @@ const SignUpPage = () => {
             type="password"
             placeholder="Password"
             value={password}
+            required
             onChange={e => setPassword(e.target.value)}
           />
           <PasswordStrengthMeter password={password} />
