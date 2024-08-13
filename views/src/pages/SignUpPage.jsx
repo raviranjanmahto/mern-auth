@@ -1,5 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { Loader, Lock, Mail, User } from "lucide-react";
 import { toast } from "react-toastify";
@@ -16,12 +17,13 @@ const SignUpPage = () => {
   const navigate = useNavigate();
 
   const [signup, { isLoading }] = useSignupMutation();
+  const dispatch = useDispatch();
 
   const handleSignUp = async e => {
     e.preventDefault();
     try {
-      const { user } = await signup({ email, password, name }).unwrap();
-      setCredentials(user);
+      const { data } = await signup({ email, password, name }).unwrap();
+      dispatch(setCredentials(data));
       navigate("/verify-email");
     } catch (err) {
       toast.error(err?.data?.message);

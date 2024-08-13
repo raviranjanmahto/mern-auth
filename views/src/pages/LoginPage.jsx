@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { Mail, Lock, Loader } from "lucide-react";
-import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import Input from "../components/Input";
@@ -9,19 +10,20 @@ import { useLoginMutation } from "../redux/userApi";
 import { setCredentials } from "../redux/userSlice";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("exter@exter.com");
+  const [password, setPassword] = useState("111111111");
 
   // Using the login mutation from RTK Query
   const [login, { isLoading }] = useLoginMutation();
+  const dispatch = useDispatch();
 
   const handleLogin = async e => {
     e.preventDefault();
     if (!email || !password) return toast.error("Fill in all fields");
 
     try {
-      const { user } = await login({ email, password }).unwrap();
-      setCredentials(user);
+      const { data } = await login({ email, password }).unwrap();
+      dispatch(setCredentials(data));
       toast.success("Logged in successfully");
     } catch (err) {
       toast.error(err?.data?.message);

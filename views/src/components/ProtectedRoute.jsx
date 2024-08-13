@@ -1,19 +1,22 @@
-import { Navigate } from "react-router-dom";
-
-import { useVerifyTokenQuery } from "../redux/userApi";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import LoadingSpinner from "./LoadingSpinner";
 
-// A higher-order component to protect routes that require authentication and email verification
 const ProtectedRoute = ({ children }) => {
-  const { isLoading, data, error } = useVerifyTokenQuery();
+  const { user } = useSelector(state => state.user); // Access the user state from the Redux store
+  const navigate = useNavigate(); // Hook to programmatically navigate between routes
 
-  if (isLoading) return <LoadingSpinner />; // While verifying the token, show a loading state or skeleton
+  useEffect(() => {
+    // Redirect to the login page if the user is not logged in
+    if (!user) navigate("/login", { replace: true });
+    else if (user && !user.isVerified)
+      navigate("/verify-email", { replace: true });
+  }, [user, navigate]); // Dependency array ensures this effect runs when the user state or navigate function changes
 
-  if (error) return <Navigate to="/login" replace />; // If there is an error (like token is invalid), redirect to login page
+  if (user === null) return <LoadingSpinner />; // Show a loading spinner while waiting for user data to load
 
-  if (!data?.user.isVerified) return <Navigate to="/verify-email" replace />; // If user is authenticated but hasn't verified their email, redirect to email verification page
-
-  return children; // If user is authenticated and email is verified, render the protected child components
+  return children; // If the user is authenticated and their email is verified, render the protected child components
 };
 
 export default ProtectedRoute;
