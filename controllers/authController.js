@@ -70,6 +70,17 @@ exports.currentUser = catchAsync(async (req, res, next) => {
   sendResponse(req.user, 200, res, "Current user fetched successfully");
 });
 
+exports.updateUser = catchAsync(async (req, res, next) => {
+  const { name, email } = req.body;
+  if (!name && !email)
+    return next(new AppError("At least one field is required", 400));
+
+  if (name) req.user.name = name;
+  if (email) req.user.email = email;
+  const user = await req.user.save();
+  sendResponse(user, 200, res, "Profile updated successfully");
+});
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const email = req.body.email;
   if (!email) return next(new AppError("Email is required", 400));

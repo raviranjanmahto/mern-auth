@@ -36,6 +36,13 @@ export const userApi = createApi({
     currentUser: builder.query({
       query: () => "/current-user",
     }),
+    updateUser: builder.mutation({
+      query: user => ({
+        url: "/update-user",
+        method: "PATCH",
+        body: user,
+      }),
+    }),
     forgotPassword: builder.mutation({
       query: email => ({
         url: "/forgot-password",
@@ -66,6 +73,7 @@ export const {
   useSignupMutation,
   useVerifyEmailMutation,
   useCurrentUserQuery,
+  useUpdateUserMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useLogoutMutation,

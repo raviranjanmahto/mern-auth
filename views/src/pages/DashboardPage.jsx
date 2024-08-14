@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -5,14 +6,13 @@ import { toast } from "react-toastify";
 import { formatDate } from "../utils/formatDate";
 import { useLogoutMutation } from "../redux/userApi";
 import { removeCredentials } from "../redux/userSlice";
-import LoadingSpinner from "../components/LoadingSpinner";
+import UpdateProfileForm from "./UpdateProfileForm";
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
   const [logout, { isLoading }] = useLogoutMutation();
+  const [isEditing, setIsEditing] = useState(false);
   const { user } = useSelector(state => state.user);
-
-  if (isLoading) <LoadingSpinner />;
 
   const handleLogout = async () => {
     try {
@@ -36,50 +36,63 @@ const DashboardPage = () => {
         Dashboard
       </h2>
 
-      <div className="space-y-6">
-        <motion.div
-          className="p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h3 className="text-xl font-semibold text-green-400 mb-3">
-            Profile Information
-          </h3>
-          <p className="text-gray-300">Name: {user.name}</p>
-          <p className="text-gray-300">Email: {user.email}</p>
-        </motion.div>
-        <motion.div
-          className="p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <h3 className="text-xl font-semibold text-green-400 mb-3">
-            Account Activity
-          </h3>
-          <p className="text-gray-300">
-            <span className="font-bold">Joined: </span>
-            {new Date(user.createdAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-          <p className="text-gray-300">
-            <span className="font-bold">Last Login: </span>
+      {isEditing ? (
+        <UpdateProfileForm user={user} setIsEditing={setIsEditing} />
+      ) : (
+        <div className="space-y-6">
+          <motion.div
+            className="p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h3 className="text-xl font-semibold text-green-400 mb-3">
+              Profile Information
+            </h3>
+            <p className="text-gray-300">Name: {user.name}</p>
+            <p className="text-gray-300">Email: {user.email}</p>
+          </motion.div>
+          <motion.div
+            className="p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <h3 className="text-xl font-semibold text-green-400 mb-3">
+              Account Activity
+            </h3>
+            <p className="text-gray-300">
+              <span className="font-bold">Joined: </span>
+              {formatDate(user.createdAt)}
+            </p>
+            <p className="text-gray-300">
+              <span className="font-bold">Last Login: </span>
 
-            {formatDate(user.lastLogin)}
-          </p>
-        </motion.div>
-      </div>
+              {formatDate(user.lastLogin)}
+            </p>
+          </motion.div>
+        </div>
+      )}
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="mt-4"
+        className="mt-4 space-y-4"
       >
+        {!isEditing && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsEditing(true)}
+            className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white 
+                font-bold rounded-lg shadow-lg hover:from-blue-600 hover:to-indigo-700
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+          >
+            Update Profile
+          </motion.button>
+        )}
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

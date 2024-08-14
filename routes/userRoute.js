@@ -12,6 +12,7 @@ router.get("/verify-token", authController.protect); // Route to verify access t
 router.use(authController.protect);
 
 router.get("/current-user", authController.currentUser);
+router.patch("/update-user", authController.updateUser);
 router.post("/logout", authController.logout); // Route to handle user logout
 router.post("/verify-email", authController.verifyEmail); // Route to verify user email address using a token
 
