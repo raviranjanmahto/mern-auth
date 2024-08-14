@@ -17,7 +17,7 @@
       "request": "launch",
       "name": "Launch Client",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/views",
+      "webRoot": "${workspaceFolder}/client",
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/*",
         "webpack:///./src/*": "${webRoot}/*",
