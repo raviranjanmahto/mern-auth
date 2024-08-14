@@ -11,15 +11,15 @@ const sendCookieToken = (user, statusCode, res, message) => {
   const token = signToken(
     user._id,
     process.env.JWT_SECRET,
-    process.env.JWT_EXPIRES_IN || "30d" // Default to 30 day if no expiration is set
+    process.env.JWT_EXPIRES_IN || "90d" // Default to 30 day if no expiration is set
   );
 
   // Define options for the cookies
   const cookieOptions = {
     httpOnly: true, // Cookie is only accessible via HTTP(S), not JavaScript
     secure: process.env.NODE_ENV === "production", // Set secure flag only in production
-    sameSite: "strict",
-    maxAge: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+    sameSite: "none", // Allows the cookie to be sent with requests from other domains
+    maxAge: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
   };
 
   // Set token cookie to expire in 24 hours
