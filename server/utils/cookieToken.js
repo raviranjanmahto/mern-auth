@@ -18,8 +18,8 @@ const sendCookieToken = (user, statusCode, res, message) => {
   const cookieOptions = {
     httpOnly: true, // Cookie is only accessible via HTTP(S), not JavaScript
     secure: process.env.NODE_ENV === "production", // Set secure flag only in production
-    sameSite: "none", // Allows the cookie to be sent with requests from other domains
-    maxAge: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Use "none" for cross-domain cookies in prod, "lax" in dev
+    maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
   };
 
   // Set token cookie to expire in 24 hours

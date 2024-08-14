@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
@@ -10,6 +11,7 @@ import UpdateProfileForm from "./UpdateProfileForm";
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [logout, { isLoading }] = useLogoutMutation();
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useSelector(state => state.user);
@@ -19,6 +21,7 @@ const DashboardPage = () => {
       await logout().unwrap();
       dispatch(removeCredentials()); // Clear user credentials from Redux store
       toast.success("Logged out successfully");
+      navigate("/login"); // Redirect to login page after logout
     } catch (err) {
       toast.error(err?.data?.message); // Show error message if logout fails
     }

@@ -126,7 +126,7 @@ exports.logout = catchAsync(async (req, res, next) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // Make sure this matches how the cookie was set
-    sameSite: "none",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Match this with how the cookie was set
   });
 
   sendResponse(null, 200, res, "Logged out successfully");
