@@ -123,7 +123,12 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.logout = catchAsync(async (req, res, next) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Make sure this matches how the cookie was set
+    sameSite: "none",
+  });
+
   sendResponse(null, 200, res, "Logged out successfully");
 });
 
