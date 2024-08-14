@@ -23,7 +23,7 @@ const sendCookieToken = (user, statusCode, res, message) => {
   };
 
   // Set token cookie to expire in 24 hours
-  res.cookie("token", token, { cookieOptions });
+  res.cookie("token", token, cookieOptions);
 
   // Send user data as response
   sendResponse(user, statusCode, res, message);
