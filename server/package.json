@@ -4,10 +4,8 @@
   "description": "mern auth",
   "main": "index.js",
   "scripts": {
-    "client": "npm run dev --prefix views",
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "build": "npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
