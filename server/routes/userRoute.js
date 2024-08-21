@@ -8,7 +8,7 @@ router.post("/login", authController.login); // Route to handle user login
 router.post("/forgot-password", authController.forgotPassword); // Route to handle forgot password request
 router.post(
   "/reset-password/:token",
-  protectRoles("test"),
+  protectRoles("user", "admin"),
   authController.resetPassword
 ); // Route to handle password reset using a token
 router.get("/verify-token", authController.protect); // Route to verify access token
@@ -17,8 +17,16 @@ router.get("/verify-token", authController.protect); // Route to verify access t
 router.use(authController.protect);
 
 router.get("/current-user", authController.currentUser);
-router.patch("/update-user", protectRoles("test"), authController.updateUser);
+router.patch(
+  "/update-user",
+  protectRoles("user", "admin"),
+  authController.updateUser
+);
 router.post("/logout", authController.logout); // Route to handle user logout
-router.post("/verify-email", protectRoles("test"), authController.verifyEmail); // Route to verify user email address using a token
+router.post(
+  "/verify-email",
+  protectRoles("user", "admin"),
+  authController.verifyEmail
+); // Route to verify user email address using a token
 
 module.exports = router;
