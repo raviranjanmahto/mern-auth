@@ -30,6 +30,22 @@ const LoginPage = () => {
     }
   };
 
+  const handleTestUserLogin = async e => {
+    e.preventDefault();
+
+    // Set test credentials
+    const email = "testuser@auth.com";
+    const password = "Qwerty@123";
+
+    try {
+      const { data } = await login({ email, password }).unwrap();
+      dispatch(setCredentials(data));
+      toast.success("Logged in as Test User");
+    } catch (err) {
+      toast.error(err?.data?.message);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -77,11 +93,18 @@ const LoginPage = () => {
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? (
-              <Loader className="w-6 h-6 animate-spin mx-auto" />
-            ) : (
-              "Login"
-            )}
+            {isLoading ? <Loader className="animate-spin mx-auto" /> : "Login"}
+          </motion.button>
+
+          {/* Test User Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full py-3 px-4 mt-4 bg-gray-700 text-white font-bold rounded-lg shadow-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
+            onClick={handleTestUserLogin}
+            disabled={isLoading}
+          >
+            Login as Test User
           </motion.button>
         </form>
       </div>
